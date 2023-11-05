@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  name     String
+  password String
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("users")
+}
+
+model Advisor {
+  id        String  @id @default(uuid())
+  is_active Boolean @default(true)
+  name      String  @unique
+
+  total_vacancies Int
+
+  requests Match[]
+
+  affinity     Affinity[]
+  relevance    Relevance[]
+  TccCoAdvisor Tcc[]       @relation("coAdvisor")
+  Tcc          Tcc[]       @relation("advisor")
+
+  @@map("advisor")
+}
+
+model Topic {
+  id   String @id @default(uuid())
+  name String @unique
+  area String
+
+  affinity  Affinity[]
+  relevance Relevance[]
+  match     Match[]
+
+  @@map("topic")
+}
+
+model Affinity {
+  id        String   @id @default(uuid())
+  value     Float
+  advisor   Advisor? @relation(fields: [advisorId], references: [id])
+  advisorId String?
+  topic     Topic?   @relation(fields: [topicId], references: [id])
+  topicId   String?
+}
+
+model Match {
+  id           String   @id @default(uuid())
+  student_name String
+  topic        Topic?   @relation(fields: [topicId], references: [id])
+  topicId      String?
+  Advisor      Advisor? @relation(fields: [advisorId], references: [id])
+  advisorId    String?
+}
+
+model Relevance {
+  id        String   @id @default(uuid())
+  value     Float
+  advisor   Advisor? @relation(fields: [advisorId], references: [id])
+  advisorId String?
+  topic     Topic?   @relation(fields: [topicId], references: [id])
+  topicId   String?
+}
+
+model Tcc {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  author      String
+  advisor     Advisor  @relation("advisor", fields: [advisorId], references: [id])
+  advisorId   String
+  coAdvisor   Advisor? @relation("coAdvisor", fields: [coAdvisorId], references: [id])
+  coAdvisorId String?
+}
