@@ -60,9 +60,10 @@ model Affinity {
 model Match {
   id           String   @id @default(uuid())
   student_name String
+  accepted     Boolean  @default(false)
   topic        Topic?   @relation(fields: [topicId], references: [id])
   topicId      String?
-  Advisor      Advisor? @relation(fields: [advisorId], references: [id])
+  advisor      Advisor? @relation(fields: [advisorId], references: [id])
   advisorId    String?
 }
 
@@ -79,6 +80,7 @@ model Tcc {
   id          String   @id @default(uuid())
   name        String   @unique
   author      String
+  archive     String
   advisor     Advisor  @relation("advisor", fields: [advisorId], references: [id])
   advisorId   String
   coAdvisor   Advisor? @relation("coAdvisor", fields: [coAdvisorId], references: [id])
